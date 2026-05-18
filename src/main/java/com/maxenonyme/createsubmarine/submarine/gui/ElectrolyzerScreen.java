@@ -83,7 +83,7 @@ public class ElectrolyzerScreen extends AbstractSimiContainerScreen<Electrolyzer
         public void onPress() {
             if (isOnButton != menu.isMachineEnabled())
                 PacketDistributor.sendToServer(
-                    new ElectrolyzerTogglePayload(menu.blockEntity.getBlockPos()));
+                    new ElectrolyzerTogglePayload(menu.pos));
         }
 
         @Override

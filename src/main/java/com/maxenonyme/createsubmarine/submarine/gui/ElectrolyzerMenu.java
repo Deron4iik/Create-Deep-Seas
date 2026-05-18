@@ -2,6 +2,7 @@ package com.maxenonyme.createsubmarine.submarine.gui;
 
 import com.maxenonyme.createsubmarine.CreateSubmarine;
 import com.maxenonyme.createsubmarine.submarine.block.entity.ElectrolyzerBlockEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,20 +12,22 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.item.ItemStack;
 
 public class ElectrolyzerMenu extends AbstractContainerMenu {
-    public final ElectrolyzerBlockEntity blockEntity;
+    public final BlockPos pos;
     private final ContainerData data;
 
     public ElectrolyzerMenu(int id, Inventory inv, FriendlyByteBuf extraData) {
-        this(id, inv, (ElectrolyzerBlockEntity) inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(8));
+        this(id, inv, extraData.readBlockPos(), new SimpleContainerData(8));
+    }
+
+    public ElectrolyzerMenu(int id, Inventory inv, BlockPos pos, ContainerData data) {
+        super(CreateSubmarine.ELECTROLYZER_MENU.get(), id);
+        this.pos = pos;
+        this.data = data;
+        addDataSlots(data);
     }
 
     public ElectrolyzerMenu(int id, Inventory inv, ElectrolyzerBlockEntity be, ContainerData data) {
-        super(CreateSubmarine.ELECTROLYZER_MENU.get(), id);
-        this.blockEntity = be;
-        this.data = data;
-
-        addDataSlots(data);
-
+        this(id, inv, be.getBlockPos(), data);
     }
 
     @Override

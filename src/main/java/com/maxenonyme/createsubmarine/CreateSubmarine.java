@@ -24,18 +24,12 @@ import org.slf4j.Logger;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
-import net.createmod.ponder.foundation.PonderIndex;
-import com.maxenonyme.createsubmarine.submarine.ponder.SubmarinePonderPlugin;
 import com.maxenonyme.createsubmarine.submarine.block.*;
 import com.maxenonyme.createsubmarine.submarine.block.entity.*;
 import com.maxenonyme.createsubmarine.submarine.effect.SuffocationEffect;
 import com.maxenonyme.createsubmarine.submarine.system.*;
 import com.maxenonyme.createsubmarine.submarine.config.HullStrengthConfig;
-import com.maxenonyme.createsubmarine.submarine.client.renderer.AllPartialModels;
 import com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig;
-import com.maxenonyme.createsubmarine.submarine.client.WatermarkOverlay;
 import net.neoforged.fml.config.ModConfig;
 
 @Mod(CreateSubmarine.MOD_ID)
@@ -171,11 +165,6 @@ public class CreateSubmarine {
 
         public CreateSubmarine(IEventBus modEventBus, ModContainer modContainer) {
                 modContainer.registerConfig(ModConfig.Type.COMMON, SubmarineConfig.SPEC);
-                if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
-                        modContainer.registerExtensionPoint(
-                                net.neoforged.neoforge.client.gui.IConfigScreenFactory.class,
-                                (container, parent) -> new net.neoforged.neoforge.client.gui.ConfigurationScreen(container, parent));
-                }
                 BLOCKS.register(modEventBus);
                 ITEMS.register(modEventBus);
                 BLOCK_ENTITIES.register(modEventBus);
@@ -185,7 +174,6 @@ public class CreateSubmarine {
                 FLUIDS.register(modEventBus);
                 MENUS.register(modEventBus);
                 modEventBus.addListener(this::onCommonSetup);
-                modEventBus.addListener(this::onRegisterScreens);
                 modEventBus.addListener(this::registerPayloads);
                 NeoForge.EVENT_BUS.addListener(SubmarinePressureSystem::onServerTick);
                 NeoForge.EVENT_BUS.addListener(SubmarineSinkingSystem::onServerTick);
@@ -199,7 +187,7 @@ public class CreateSubmarine {
                 modEventBus.addListener(this::registerCapabilities);
 
                 if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
-                        registerClientEvents(modEventBus);
+                        CreateSubmarineClient.init(modEventBus, modContainer);
                 }
         }
 
@@ -210,21 +198,6 @@ public class CreateSubmarine {
                 }
         }
 
-        private void registerClientEvents(IEventBus modEventBus) {
-                modEventBus.addListener(this::onClientSetup);
-                modEventBus.addListener(this::onRegisterRenderers);
-                modEventBus.addListener(WatermarkOverlay::register);
-                NeoForge.EVENT_BUS.register(com.maxenonyme.createsubmarine.submarine.client.SubmarineFogHandler.class);
-                NeoForge.EVENT_BUS.register(com.maxenonyme.createsubmarine.submarine.client.SubLevelCrackRenderer.class);
-                NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> {
-                        com.maxenonyme.createsubmarine.submarine.client.SubLevelCrackRenderer.clearAll();
-                        com.maxenonyme.createsubmarine.submarine.util.SubLevelRegistry.clearAll();
-                        com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.clearAll();
-                });
-        }
-        private void onRegisterRenderers(net.neoforged.neoforge.client.event.EntityRenderersEvent.RegisterRenderers event) {
-                event.registerBlockEntityRenderer(ELECTROLYZER_BE.get(), com.maxenonyme.createsubmarine.submarine.block.entity.renderer.ElectrolyzerBlockEntityRenderer::new);
-        }
         private void registerPayloads(final net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent event) {
                 final net.neoforged.neoforge.network.registration.PayloadRegistrar registrar = event.registrar(MOD_ID);
                 registrar.playToClient(
@@ -239,28 +212,6 @@ public class CreateSubmarine {
                                 com.maxenonyme.createsubmarine.submarine.network.ElectrolyzerTogglePayload.TYPE,
                                 com.maxenonyme.createsubmarine.submarine.network.ElectrolyzerTogglePayload.CODEC,
                                 com.maxenonyme.createsubmarine.submarine.network.ElectrolyzerTogglePayload::handle);
-        }
-        private void onClientSetup(net.neoforged.fml.event.lifecycle.FMLClientSetupEvent event) {
-                event.enqueueWork(() -> {
-                        ItemBlockRenderTypes.setRenderLayer(ELECTROLYZER.get(), RenderType.cutout());
-                        ItemBlockRenderTypes.setRenderLayer(OXYGENE_DIFFUSER.get(), RenderType.cutout());
-                        ItemBlockRenderTypes.setRenderLayer(WATER_THRUSTER.get(), RenderType.cutout());
-                        ItemBlockRenderTypes.setRenderLayer(GLASS_PRESSURIZER.get(), RenderType.cutout());
-                });
-
-                PonderIndex.addPlugin(new SubmarinePonderPlugin());
-                dev.ryanhcode.sable.render.water_occlusion.WaterOcclusionRenderer.setIsEnabled(true);
-                AllPartialModels.init();
-                dev.engine_room.flywheel.lib.visualization.SimpleBlockEntityVisualizer
-                                .builder(BALLAST_VENT_BE.get())
-                                .factory(com.simibubi.create.content.kinetics.base.SingleAxisRotatingVisual::shaft)
-                                .skipVanillaRender(be -> true)
-                                .apply();
-
-        }
-
-        private void onRegisterScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
-                event.register(ELECTROLYZER_MENU.get(), com.maxenonyme.createsubmarine.submarine.gui.ElectrolyzerScreen::new);
         }
         private void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
                 event.registerBlockEntity(
