@@ -34,7 +34,7 @@ public final class CreateSubmarineClient {
     public static void init(IEventBus modEventBus, ModContainer modContainer) {
         modContainer.registerExtensionPoint(
                 IConfigScreenFactory.class,
-                (container, parent) -> new ConfigurationScreen(container, parent));
+                (container, parent) -> new com.maxenonyme.createsubmarine.submarine.client.HullStrengthConfigScreen(container, parent));
 
         modEventBus.addListener(CreateSubmarineClient::onClientSetup);
         modEventBus.addListener(CreateSubmarineClient::onRegisterRenderers);
@@ -61,7 +61,8 @@ public final class CreateSubmarineClient {
             ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.ELECTROLYZER.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.OXYGENE_DIFFUSER.get(), RenderType.cutout());
             ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.WATER_THRUSTER.get(), RenderType.cutout());
-            ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.GLASS_PRESSURIZER.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.IRON_PRESSURIZER.get(), RenderType.cutout());
+            ItemBlockRenderTypes.setRenderLayer(CreateSubmarine.COPPER_PRESSURIZER.get(), RenderType.cutout());
         });
 
         PonderIndex.addPlugin(new SubmarinePonderPlugin());
