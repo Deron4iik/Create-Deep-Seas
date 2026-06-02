@@ -227,9 +227,21 @@ public class CreateSubmarine {
                         "poulis",
                         () -> BlockEntityType.Builder.of(PoulisBlockEntity::new, POULIS.get()).build(null));
 
+        public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
+        public static final Supplier<CreativeModeTab> ABYSS_TAB = CREATIVE_MODE_TABS.register("abyss_tab",
+                        () -> CreativeModeTab.builder()
+                                        .title(Component.translatable("itemGroup.create_submarine.abyss_tab"))
+                                        .icon(() -> new ItemStack(com.maxenonyme.AbyssDimension.entities.EntityRegistry.AMPHISTIUM_SPAWN_EGG.get()))
+                                        .displayItems((parameters, output) -> {
+                                                output.accept(com.maxenonyme.AbyssDimension.entities.EntityRegistry.AMPHISTIUM_SPAWN_EGG.get());
+                                        })
+                                        .build());
+
         public CreateSubmarine(IEventBus modEventBus, ModContainer modContainer) {
                 com.maxenonyme.AbyssDimension.LianaRegistry.init();
+                com.maxenonyme.AbyssDimension.entities.EntityRegistry.init(modEventBus);
                 modContainer.registerConfig(ModConfig.Type.COMMON, SubmarineConfig.SPEC);
+                CREATIVE_MODE_TABS.register(modEventBus);
                 BLOCKS.register(modEventBus);
                 ITEMS.register(modEventBus);
                 BLOCK_ENTITIES.register(modEventBus);
