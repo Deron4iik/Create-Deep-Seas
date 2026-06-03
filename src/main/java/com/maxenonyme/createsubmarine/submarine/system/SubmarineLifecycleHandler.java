@@ -25,6 +25,7 @@ public final class SubmarineLifecycleHandler {
         SubmarinePressureSystem.clearAll();
         SubLevelRegistry.clearAll();
         CompartmentTracker.clearAll();
+        SubmarineDriverRegistry.clearAll();
         SubmarineInteractionSystem.clearAll();
     }
 

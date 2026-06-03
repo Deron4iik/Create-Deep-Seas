@@ -184,7 +184,7 @@ public class SubmarinePressureSystem {
         boolean facesExterior = false;
         for (Direction dir : Direction.values()) {
             BlockPos neighbor = plotPos.relative(dir);
-            if (!comp.hull().contains(neighbor) && !comp.internal().contains(neighbor)) {
+            if (!CompartmentTracker.isWithinShip(id, neighbor)) {
                 facesExterior = true;
                 break;
             }
