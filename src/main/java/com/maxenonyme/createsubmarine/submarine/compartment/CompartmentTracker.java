@@ -310,6 +310,11 @@ public class CompartmentTracker {
         return COMPARTMENTS.getOrDefault(id, List.of());
     }
 
+    public static boolean isWithinShip(UUID id, BlockPos plotPos) {
+        Set<BlockPos> union = VISUAL_UNION.get(id);
+        return union != null && union.contains(plotPos);
+    }
+
     public static boolean isCompromised(UUID id, BlockPos anchor) {
         return COMPROMISED_ANCHORS.getOrDefault(id, Set.of()).contains(anchor);
     }
