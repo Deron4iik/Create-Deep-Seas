@@ -4,6 +4,7 @@ import com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker;
 import com.maxenonyme.createsubmarine.submarine.util.SubLevelRegistry;
 import com.maxenonyme.createsubmarine.submarine.system.SubmarinePressureSystem;
 import com.maxenonyme.createsubmarine.submarine.system.SubmarineHullManager;
+import com.maxenonyme.createsubmarine.submarine.system.SubmarineDriverRegistry;
 import dev.ryanhcode.sable.companion.SableCompanion;
 import dev.ryanhcode.sable.companion.SubLevelAccess;
 import dev.ryanhcode.sable.companion.math.Pose3dc;
@@ -28,6 +29,9 @@ public class HullControllerBlockEntity extends BlockEntity {
         if (subAccess instanceof SubLevel sub) {
             currentSubLevelId = sub.getUniqueId();
             long gameTick = level.getGameTime();
+            if (!SubmarineDriverRegistry.claim(currentSubLevelId, worldPosition, SubmarineDriverRegistry.HULL_CONTROLLER, gameTick)) {
+                return;
+            }
             if (!CompartmentTracker.isScanActive(currentSubLevelId)
                     && gameTick - CompartmentTracker.lastUpdateTick(currentSubLevelId) >= 20) {
                 CompartmentTracker.beginScanIfIdle(currentSubLevelId, sub);
@@ -58,24 +62,31 @@ public class HullControllerBlockEntity extends BlockEntity {
                 }
             }
         } else if (currentSubLevelId != null) {
-            SubmarineHullManager.removeHull(currentSubLevelId);
-            if (!level.isClientSide) {
-                SubLevelRegistry.unregister(currentSubLevelId);
-                SubmarinePressureSystem.clearSubmarine(currentSubLevelId);
-            }
-            CompartmentTracker.remove(currentSubLevelId);
+            releaseDriver();
             currentSubLevelId = null;
             subLevelRegistered = false;
         }
     }
+
+    private void releaseDriver() {
+        if (currentSubLevelId == null) return;
+        long tick = level != null ? level.getGameTime() : 0L;
+        if (SubmarineDriverRegistry.release(currentSubLevelId, worldPosition, tick)) {
+            SubmarineHullManager.removeHull(currentSubLevelId);
+            if (level != null && !level.isClientSide) {
+                SubLevelRegistry.unregister(currentSubLevelId);
+                SubmarinePressureSystem.clearSubmarine(currentSubLevelId);
+            }
+            CompartmentTracker.remove(currentSubLevelId);
+        }
+    }
+
     @Override
     public void setRemoved() {
         super.setRemoved();
         if (currentSubLevelId != null) {
-            SubmarineHullManager.removeHull(currentSubLevelId);
-            SubLevelRegistry.unregister(currentSubLevelId);
-            CompartmentTracker.remove(currentSubLevelId);
-            SubmarinePressureSystem.clearSubmarine(currentSubLevelId);
+            releaseDriver();
+            currentSubLevelId = null;
             subLevelRegistered = false;
         }
     }

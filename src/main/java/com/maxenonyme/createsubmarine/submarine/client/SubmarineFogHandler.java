@@ -53,7 +53,7 @@ public class SubmarineFogHandler {
 
     private static boolean computeShouldFog(Level level, Vec3 probePos) {
         if (findSubmarineContainingPos(level, probePos) == null) return false;
-        return hasWaterAboveOrAt(level, probePos);
+        return isSubmerged(level, probePos);
     }
 
     private static UUID findSubmarineContainingPos(Level level, Vec3 probePos) {
@@ -69,13 +69,14 @@ public class SubmarineFogHandler {
         return null;
     }
 
-    private static boolean hasWaterAboveOrAt(Level level, Vec3 probePos) {
+    private static boolean isSubmerged(Level level, Vec3 probePos) {
         int x = (int) Math.floor(probePos.x);
         int z = (int) Math.floor(probePos.z);
         int startY = (int) Math.floor(probePos.y);
         int endY = level.getMaxBuildHeight();
         for (int y = startY; y <= endY; y++) {
-            if (isWaterAt(level, x, y, z)) return true;
+            if (CompartmentTracker.isOccluded(level, new BlockPos(x, y, z))) continue;
+            return isWaterAt(level, x, y, z);
         }
         return false;
     }
