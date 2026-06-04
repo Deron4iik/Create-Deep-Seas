@@ -69,7 +69,7 @@
 "create_submarine.ponder.steel_cable.text_1": "实体可在绷紧的钢制缆绳上移动。",
 
 "create_submarine.ponder.steel_cable_electrified.header": "钢制缆绳——通电",
-"create_submarine.ponder.steel_cable_electrified.text_1": "使用诸如\nCreate: Addition 的电力模组，\n直接向持有缆绳的\n绳索绞盘提供 FE 以使其通电。",
+"create_submarine.ponder.steel_cable_electrified.text_1": "使用诸如\nCreate Crafts & Additions 的电力模组，\n直接向持有缆绳的\n绳索绞盘提供 FE 以使其通电。",
 
 "create_submarine.configuration.title": "机械动力：深海",
 "create_submarine.configuration.section.create.submarine.common.toml": "通用",
