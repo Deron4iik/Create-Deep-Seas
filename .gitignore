@@ -31,5 +31,4 @@ replay_pid*
 /.gradle
 /bin
 /.eclipse
-sodium_shaders/clouds.fsh
 /sodium_shaders
