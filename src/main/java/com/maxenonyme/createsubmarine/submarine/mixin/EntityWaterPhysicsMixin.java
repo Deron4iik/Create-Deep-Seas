@@ -55,14 +55,27 @@ public abstract class EntityWaterPhysicsMixin {
     }
 
     @Unique
+    private long createsubmarine$cacheTick = -1L;
+    @Unique
+    private boolean createsubmarine$cachedInside = false;
+
+    @Unique
     private boolean createsubmarine$isInsideAirtightSub() {
         Entity entity = (Entity) (Object) this;
         if (entity.level() == null) return false;
-        
+
+        long tick = entity.level().getGameTime();
+        if (tick == createsubmarine$cacheTick) return createsubmarine$cachedInside;
+
         net.minecraft.world.phys.Vec3 eyePos = new net.minecraft.world.phys.Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
-        if (com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), eyePos)) return true;
-        
-        net.minecraft.world.phys.Vec3 feetPos = entity.position();
-        return com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), feetPos);
+        boolean inside = com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), eyePos);
+        if (!inside) {
+            net.minecraft.world.phys.Vec3 feetPos = entity.position();
+            inside = com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), feetPos);
+        }
+
+        createsubmarine$cacheTick = tick;
+        createsubmarine$cachedInside = inside;
+        return inside;
     }
 }
