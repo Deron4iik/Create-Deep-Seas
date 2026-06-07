@@ -55,14 +55,38 @@ public abstract class EntityWaterPhysicsMixin {
     }
 
     @Unique
+    private long createsubmarine$cacheTick = -1L;
+    @Unique
+    private double createsubmarine$cacheX, createsubmarine$cacheY, createsubmarine$cacheZ, createsubmarine$cacheEyeY;
+    @Unique
+    private boolean createsubmarine$cachedInside = false;
+
+    @Unique
     private boolean createsubmarine$isInsideAirtightSub() {
         Entity entity = (Entity) (Object) this;
         if (entity.level() == null) return false;
-        
-        net.minecraft.world.phys.Vec3 eyePos = new net.minecraft.world.phys.Vec3(entity.getX(), entity.getEyeY(), entity.getZ());
-        if (com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), eyePos)) return true;
-        
-        net.minecraft.world.phys.Vec3 feetPos = entity.position();
-        return com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), feetPos);
+
+        long tick = entity.level().getGameTime();
+        double x = entity.getX(), y = entity.getY(), z = entity.getZ(), eyeY = entity.getEyeY();
+        if (tick == createsubmarine$cacheTick
+                && x == createsubmarine$cacheX && y == createsubmarine$cacheY
+                && z == createsubmarine$cacheZ && eyeY == createsubmarine$cacheEyeY) {
+            return createsubmarine$cachedInside;
+        }
+
+        net.minecraft.world.phys.Vec3 eyePos = new net.minecraft.world.phys.Vec3(x, eyeY, z);
+        boolean inside = com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), eyePos);
+        if (!inside) {
+            net.minecraft.world.phys.Vec3 feetPos = entity.position();
+            inside = com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.isOccludedExact(entity.level(), feetPos);
+        }
+
+        createsubmarine$cacheTick = tick;
+        createsubmarine$cacheX = x;
+        createsubmarine$cacheY = y;
+        createsubmarine$cacheZ = z;
+        createsubmarine$cacheEyeY = eyeY;
+        createsubmarine$cachedInside = inside;
+        return inside;
     }
 }
