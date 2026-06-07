@@ -136,7 +136,7 @@
   "item.create_submarine.phycological_membrane": "Альгологічна мембрана",
   "item.create_submarine.phycological_membrane.tooltip.summary": "Може бути заповнена повітрям.",
   "item.create_submarine.pressurizer.tooltip.summary": "Дозволяє оснащувати субмарини\nвікнами, стійкими до тиску.",
-  "item.create_submarine.steel_cable": "Стальний трос",
+  "item.create_submarine.steel_cable": "Сталевий трос",
   "itemGroup.create_submarine": "Create Deep Seas",
   "itemGroup.create_submarine.abyss_tab": "Create Deep Seas",
   "item.create_submarine.underwater_mine.tooltip.summary": "При прикріпленні до споруди (contraption) з Create Aeronautics,\nця міна здетонує, якщо істоти або\nчовни підійдуть занадто близько.",
