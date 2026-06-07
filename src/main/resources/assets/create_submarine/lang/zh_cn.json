@@ -137,5 +137,78 @@
 "entity.create_submarine.amphistium": "类比目鱼",
 "item.create_submarine.amphistium_spawn_egg": "类比目鱼刷怪蛋",
 
-"itemGroup.create_submarine.abyss_tab": "机械动力：深海"
+"itemGroup.create_submarine.abyss_tab": "机械动力：深海",
+  
+"block.create_submarine.glass_pressurizer": "耐压玻璃",
+
+"block.create_submarine.submarine_propeller": "潜艇螺旋桨",
+"block.create_submarine.underwater_mine": "水雷",
+"block.create_submarine.rudder": "船舵",
+
+"create_submarine.command.no_sublevel_container": "未在当前维度找到子层级容器。",
+"create_submarine.command.player_only": "只有玩家可以执行该命令。",
+"create_submarine.command.queue_submarine_lianas": "已排队生成 %s 条长度为 %s 的潜艇藤蔓，将从您当前位置开始生成。",
+"create_submarine.command.spawn_liana_failed": "潜艇藤蔓生成失败。",
+"create_submarine.command.spawn_liana_success": "已成功生成一条长度为 %s 的潜艇藤蔓。",
+
+"create_submarine.configuration.client": "客户端设置",
+"create_submarine.configuration.client.button": "客户端设置",
+"create_submarine.configuration.client.tooltip": "界面及渲染的客户端设置",
+
+"create_submarine.configuration.disableStartupScreens": "禁用启动界面",
+"create_submarine.configuration.disableStartupScreens.tooltip": "禁用本模组的所有启动界面。强烈建议您在创建整合包时启用。",
+
+"create_submarine.configuration.ignoredUpdateVersion": "忽略版本更新",
+"create_submarine.configuration.ignoredUpdateVersion.tooltip": "内部设置：记录用户最近一次忽略的更新通知版本号。",
+
+"create_submarine.configuration.mechanics": "机制",
+"create_submarine.configuration.mechanics.button": "机制",
+"create_submarine.configuration.mechanics.tooltip": "推进器，压载以及缆绳的调节。",
+
+"create_submarine.configuration.steelCableMaxLength": "钢制缆绳最大长度",
+"create_submarine.configuration.steelCableMaxLength.tooltip": "钢制缆绳的最大长度（两端连接点之间的方块距离）。过长的缆绳可能造成服务器卡顿。默认值为 1000。",
+
+"create_submarine.configuration.welcomeScreenSeen": "欢迎界面设置",
+"create_submarine.configuration.welcomeScreenSeen.tooltip": "内部设置：在确认机械动力：深海欢迎界面后自动设为是。将其改回否可在下次进入主菜单时再次显示欢迎界面。",
+
+"create_submarine.gui.goggles.energy": "能量",
+"create_submarine.gui.goggles.steel_cable_network": "钢制缆绳网络",
+
+"create_submarine.screen.hull_strength_config.title": "船体强度设置",
+
+"create_submarine.ui.button.apply_changes": "应用更改",
+"create_submarine.ui.button.cancel": "取消",
+"create_submarine.ui.button.global_settings": "全局设置",
+"create_submarine.ui.button.save_exit": "保存并退出",
+"create_submarine.ui.button.update_available": "可用更新：v%s",
+
+"create_submarine.ui.text.implosion_chance": "内爆几率 (0.0 - 1.0)",
+"create_submarine.ui.text.max_water_depth": "最大水深 （方块）",
+"create_submarine.ui.text.select_block_tip": "选择一个方块以编辑其属性",
+
+"create_submarine.update.button.modrinth": "打开Modrinth",
+"create_submarine.update.hover": "点击以打开Modrinth",
+"create_submarine.update.message": "机械动力：深海的新版本可用：v%s！可前往 %s 下载。",
+"create_submarine.update.message_screen": "机械动力：深海新版本可用：v%s",
+"create_submarine.update.title": "机械动力：深海更新",
+
+"death.attack.create_submarine.suffocation": "%1$s在浓烟里窒息而死",
+"effect.create_submarine.suffocation": "窒息",
+
+"entity.create_submarine.cookiecutter_shark": "雪茄达摩鲨",
+"item.create_submarine.cookiecutter_shark_spawn_egg": "雪茄达摩鲨刷怪蛋",
+
+"item.create_submarine.underwater_mine.tooltip.summary": "安装在机械动力：航空学的模拟装置上后，\n若有实体或船只\n接近，此水雷将会引爆。",
+
+"create_submarine.configuration.submarinePropellerPowerMultiplier": "潜艇螺旋桨动力倍率",
+"create_submarine.configuration.submarinePropellerPowerMultiplier.tooltip": "对潜艇螺旋桨推力及气流输出的倍率。\n数值越低，推进力越弱；数值越高，推进力越强。",
+
+"item.create_submarine.submarine_propeller.tooltip.summary": "在水中运行极佳，离开水后毫无作用",
+
+"create_submarine.lithostitched_missing.title": "缺失依赖项！",
+"create_submarine.lithostitched_missing.message": "已在机械动力：深海配置中启用某项实验性功能，但该功能需要“Lithostitched”库才能正常运行。\n\n游戏不会崩溃，但该选项已被自动禁用。安装 Lithostitched 后，您需要在配置中重新启用该选项。",
+"create_submarine.lithostitched_missing.download": "下载Lithostitched",
+
+"create_submarine.configuration.enableAbyssDimension": "启用渊海维度",
+"create_submarine.configuration.enableAbyssDimension.tooltip": "启用渊海维度。\n需要安装“Lithostitched”模组。"
 }
