@@ -21,7 +21,7 @@
   "create_submarine.configuration.ballastForceMultiplier": "Множник сили баласту",
   "create_submarine.configuration.ballastForceMultiplier.tooltip": "Множник вертикальної сили, яку прикладають баластні цистерни. Нижче = повільніше занурення/підйом, вище = різкіше.",
   "create_submarine.configuration.ballastTransferRateMultiplier": "Множник швидкості перекачування баласту",
-  "create_submarine.configuration.ballastTransferRateMultiplier.tooltip": "Множник швидкості заповнення/осушення баластного клапана. Нижче = повільніше наповнення/опустошення, вище = швидше.",
+  "create_submarine.configuration.ballastTransferRateMultiplier.tooltip": "Множник швидкості заповнення/осушення баластного клапана. Нижче = повільніше наповнення/спорожнення, вище = швидше.",
   "create_submarine.configuration.client": "Налаштування клієнта",
   "create_submarine.configuration.client.button": "Налаштування клієнта",
   "create_submarine.configuration.client.tooltip": "Клієнтські налаштування інтерфейсу та рендерингу.",
