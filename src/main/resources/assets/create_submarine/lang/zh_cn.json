@@ -188,7 +188,7 @@
 
 "create_submarine.update.button.modrinth": "打开Modrinth",
 "create_submarine.update.hover": "点击以打开Modrinth",
-"create_submarine.update.message": "机械动力：深海的新版本可用：v%s！可前往 %s 下载。",
+"create_submarine.update.message": "机械动力：深海的新版本可用：v%1$s！可前往 %2$s 下载。",
 "create_submarine.update.message_screen": "机械动力：深海新版本可用：v%s",
 "create_submarine.update.title": "机械动力：深海更新",
 
