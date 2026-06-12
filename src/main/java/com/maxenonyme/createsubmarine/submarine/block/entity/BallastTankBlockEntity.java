@@ -266,7 +266,8 @@ public class BallastTankBlockEntity extends BlockEntity implements IHaveGoggleIn
 
         double submergedRatio = Math.max(0.0, Math.min(1.0, depth));
 
-        double baseTarget = (0.5 - fillRatio) * 4.0;
+        double maxSpeed = com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig.BALLAST_VERTICAL_SPEED.get();
+        double baseTarget = (0.5 - fillRatio) * 2.0 * maxSpeed;
         double distanceToSurface = localWaterSurfaceY - worldPos.y;
         double targetVelY;
         if (baseTarget > 0) {
@@ -275,16 +276,14 @@ public class BallastTankBlockEntity extends BlockEntity implements IHaveGoggleIn
             targetVelY = baseTarget;
         }
 
-        double perceivedVelY = Math.max(-0.2, currentVelY);
+        // cap on both sides so the climb doesn't stall: matching the target used to zero the force and let gravity win
+        double perceivedVelY = Math.max(-0.2, Math.min(0.2, currentVelY));
         double errorY = targetVelY - perceivedVelY;
         double mass = com.maxenonyme.createsubmarine.submarine.util.SablePhysicsHelper.readMass(sub);
 
-        int clusterSize = be.getCluster().size();
         double forceMult = com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig.BALLAST_FORCE_MULTIPLIER.get();
-        double forceToApply = ((errorY * mass * 0.16 * forceMult) * submergedRatio) / clusterSize;
-
-        double ballastMaxForce = (4000.0 * mass * forceMult) / clusterSize;
-        forceToApply = Math.max(-ballastMaxForce, Math.min(ballastMaxForce, forceToApply));
+        double liftPerTank = com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig.BALLAST_LIFT_PER_TANK.get();
+        double forceToApply = errorY * liftPerTank * 0.16 * forceMult * submergedRatio;
 
         if (Double.isFinite(forceToApply)) {
             applyForce(sub, forceToApply);

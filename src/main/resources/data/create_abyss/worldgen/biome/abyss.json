@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "create_submarine:config_enabled",
+      "config_key": "enableAbyssDimension"
+    }
+  ],
   "has_precipitation": false,
   "temperature": 0.2,
   "downfall": 0.0,
@@ -14,7 +20,7 @@
   "spawners": {
     "water_ambient": [
       {
-        "type": "create_submarine:amphistium",
+        "type": "create_abyss:amphistium",
         "weight": 80,
         "minCount": 4,
         "maxCount": 6
@@ -22,7 +28,7 @@
     ],
     "water_creature": [
       {
-        "type": "create_submarine:cookiecutter_shark",
+        "type": "create_abyss:cookiecutter_shark",
         "weight": 12,
         "minCount": 1,
         "maxCount": 1

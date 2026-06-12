@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "create_submarine:config_enabled",
+      "config_key": "enableAbyssDimension"
+    }
+  ],
   "ultrawarm": false,
   "natural": false,
   "coordinate_scale": 1.0,
@@ -16,5 +22,5 @@
   "height": 768,
   "logical_height": 768,
   "infiniburn": "#minecraft:infiniburn_overworld",
-  "effects": "create_submarine:abyss"
+  "effects": "create_abyss:abyss"
 }

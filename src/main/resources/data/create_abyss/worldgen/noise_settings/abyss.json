@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "create_submarine:config_enabled",
+      "config_key": "enableAbyssDimension"
+    }
+  ],
   "sea_level": 700,
   "disable_mob_generation": false,
   "aquifers_enabled": false,
@@ -41,7 +47,7 @@
         "type": "minecraft:mul",
         "argument1": {
           "type": "minecraft:noise",
-          "noise": "create_submarine:abyss",
+          "noise": "create_abyss:abyss",
           "xz_scale": 0.03,
           "y_scale": 0.0
         },
@@ -61,7 +67,7 @@
         "type": "minecraft:mul",
         "argument1": {
           "type": "minecraft:noise",
-          "noise": "create_submarine:abyss",
+          "noise": "create_abyss:abyss",
           "xz_scale": 0.03,
           "y_scale": 0.0
         },

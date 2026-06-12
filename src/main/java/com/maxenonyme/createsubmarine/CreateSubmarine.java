@@ -6,12 +6,9 @@ import net.minecraft.world.level.block.TransparentBlock;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -238,6 +235,17 @@ public class CreateSubmarine {
                         "poulis",
                         () -> BlockEntityType.Builder.of(PoulisBlockEntity::new, POULIS.get()).build(null));
 
+        public static final Supplier<Block> ARRESTING_HOOK = BLOCKS.register("arresting_hook",
+                        () -> new com.maxenonyme.createsubmarine.submarine.block.ArrestingHookBlock(
+                                        BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
+        public static final Supplier<Item> ARRESTING_HOOK_ITEM = ITEMS.register("arresting_hook",
+                        () -> new net.minecraft.world.item.BlockItem(ARRESTING_HOOK.get(), new Item.Properties()));
+        public static final Supplier<BlockEntityType<com.maxenonyme.createsubmarine.submarine.block.entity.ArrestingHookBlockEntity>> ARRESTING_HOOK_BE = BLOCK_ENTITIES.register(
+                        "arresting_hook",
+                        () -> BlockEntityType.Builder.of(
+                                        com.maxenonyme.createsubmarine.submarine.block.entity.ArrestingHookBlockEntity::new,
+                                        ARRESTING_HOOK.get()).build(null));
+
         public static final Supplier<Block> UNDERWATER_MINE = BLOCKS.register("underwater_mine",
                         () -> new UnderwaterMineBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).noOcclusion()));
         public static final Supplier<Item> UNDERWATER_MINE_ITEM = ITEMS.register("underwater_mine",
@@ -255,22 +263,8 @@ public class CreateSubmarine {
                         "submarine_propeller",
                         () -> BlockEntityType.Builder.of(com.maxenonyme.createsubmarine.submarine.block.propeller.submarine_propeller.SubmarinePropellerBlockEntity::new, SUBMARINE_PROPELLER.get()).build(null));
 
-        public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
-        public static final Supplier<CreativeModeTab> ABYSS_TAB = CREATIVE_MODE_TABS.register("abyss_tab",
-                        () -> CreativeModeTab.builder()
-                                        .title(Component.translatable("itemGroup.create_submarine.abyss_tab"))
-                                        .icon(() -> new ItemStack(com.maxenonyme.AbyssDimension.entities.EntityRegistry.AMPHISTIUM_SPAWN_EGG.get()))
-                                        .displayItems((parameters, output) -> {
-                                                output.accept(com.maxenonyme.AbyssDimension.entities.EntityRegistry.AMPHISTIUM_SPAWN_EGG.get());
-                                                output.accept(com.maxenonyme.AbyssDimension.entities.EntityRegistry.COOKIECUTTER_SHARK_SPAWN_EGG.get());
-                                        })
-                                        .build());
-
         public CreateSubmarine(IEventBus modEventBus, ModContainer modContainer) {
-                com.maxenonyme.AbyssDimension.LianaRegistry.init();
-                com.maxenonyme.AbyssDimension.entities.EntityRegistry.init(modEventBus);
                 modContainer.registerConfig(ModConfig.Type.COMMON, SubmarineConfig.SPEC);
-                CREATIVE_MODE_TABS.register(modEventBus);
                 BLOCKS.register(modEventBus);
                 ITEMS.register(modEventBus);
                 BLOCK_ENTITIES.register(modEventBus);
@@ -289,12 +283,8 @@ public class CreateSubmarine {
                 NeoForge.EVENT_BUS.addListener(SubmarineInteractionSystem::onServerTick);
                 NeoForge.EVENT_BUS.addListener(com.maxenonyme.createsubmarine.submarine.system.SteelCablePhysicsSystem::onServerTick);
                 NeoForge.EVENT_BUS.addListener(com.maxenonyme.createsubmarine.submarine.system.CableElectrificationSystem::onServerTick);
-                NeoForge.EVENT_BUS.addListener(com.maxenonyme.AbyssDimension.system.LianaLODOptimizer::onServerTick);
-                NeoForge.EVENT_BUS.addListener(com.maxenonyme.AbyssDimension.system.SubmarineLianaCommand::onServerTick);
                 NeoForge.EVENT_BUS.addListener(
                                 com.maxenonyme.createsubmarine.submarine.system.SubmarineInfoCommand::register);
-                NeoForge.EVENT_BUS.addListener(
-                                com.maxenonyme.AbyssDimension.system.SubmarineLianaCommand::register);
                 NeoForge.EVENT_BUS.addListener(
                                 com.maxenonyme.createsubmarine.submarine.system.WrenchRepairHandler::onRightClickBlock);
                 NeoForge.EVENT_BUS.addListener(this::onBlockPlaceAboveSensor);
@@ -342,10 +332,6 @@ public class CreateSubmarine {
                                 com.maxenonyme.createsubmarine.submarine.network.HullConfigEditPayload.TYPE,
                                 com.maxenonyme.createsubmarine.submarine.network.HullConfigEditPayload.CODEC,
                                 com.maxenonyme.createsubmarine.submarine.network.HullConfigEditPayload::handle);
-                registrar.playToServer(
-                                com.maxenonyme.AbyssDimension.network.StruggleSharkPayload.TYPE,
-                                com.maxenonyme.AbyssDimension.network.StruggleSharkPayload.CODEC,
-                                com.maxenonyme.AbyssDimension.network.StruggleSharkPayload::handle);
                 registrar.playToClient(
                                 com.maxenonyme.createsubmarine.submarine.network.CameraShakePayload.TYPE,
                                 com.maxenonyme.createsubmarine.submarine.network.CameraShakePayload.CODEC,
@@ -466,6 +452,8 @@ public class CreateSubmarine {
                         itemToSection.put(ResourceLocation.fromNamespaceAndPath(MOD_ID, "underwater_mine"), subSection);
                         tabItems.add(SUBMARINE_PROPELLER_ITEM::get);
                         itemToSection.put(ResourceLocation.fromNamespaceAndPath(MOD_ID, "submarine_propeller"), subSection);
+                        tabItems.add(ARRESTING_HOOK_ITEM::get);
+                        itemToSection.put(ResourceLocation.fromNamespaceAndPath(MOD_ID, "arresting_hook"), subSection);
                 } catch (Exception ignored) {
                 }
         }

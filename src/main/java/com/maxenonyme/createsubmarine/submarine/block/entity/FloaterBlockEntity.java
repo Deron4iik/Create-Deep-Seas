@@ -24,41 +24,10 @@ public class FloaterBlockEntity extends BlockEntity {
     private static final int PRESSURE_CHECK_INTERVAL = 20;
     private static final int MAX_WATER_SCAN = 200;
 
-    private static final Map<UUID, Integer> FLOATER_COUNTS = new ConcurrentHashMap<>();
-    private static final Map<UUID, Long> LAST_COUNT_TIMES = new ConcurrentHashMap<>();
-
     private int pressureTickCounter = 0;
 
     public FloaterBlockEntity(BlockPos pos, BlockState state) {
         super(CreateSubmarine.FLOATER_BE.get(), pos, state);
-    }
-
-    private static int getFloaterCount(Level level, SubLevelAccess sub) {
-        UUID id = sub.getUniqueId();
-        long time = level.getGameTime();
-        Long lastTime = LAST_COUNT_TIMES.get(id);
-        if (lastTime != null && time - lastTime < 20) {
-            return FLOATER_COUNTS.getOrDefault(id, 1);
-        }
-        SubLevelRegistry.PlotBounds bounds = SubLevelRegistry.getBounds(id);
-        int count = 0;
-        if (bounds != null && !bounds.isEmpty()) {
-            BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
-            for (int x = bounds.minX(); x <= bounds.maxX(); x++) {
-                for (int y = bounds.minY(); y <= bounds.maxY(); y++) {
-                    for (int z = bounds.minZ(); z <= bounds.maxZ(); z++) {
-                        p.set(x, y, z);
-                        if (level.getBlockState(p).is(CreateSubmarine.FLOATER.get())) {
-                            count++;
-                        }
-                    }
-                }
-            }
-        }
-        if (count == 0) count = 1;
-        FLOATER_COUNTS.put(id, count);
-        LAST_COUNT_TIMES.put(id, time);
-        return count;
     }
 
     public static void serverTick(Level level, BlockPos pos, FloaterBlockEntity be) {
@@ -138,16 +107,12 @@ public class FloaterBlockEntity extends BlockEntity {
         double distanceToSurface = localWaterSurfaceY - worldPos.y;
         double targetVelY = Math.max(-0.1, Math.min(1.0, distanceToSurface));
 
-        double perceivedVelY = Math.max(-0.2, currentVelY);
+        double perceivedVelY = Math.max(-0.2, Math.min(0.2, currentVelY));
         double errorY = targetVelY - perceivedVelY;
-        double mass = SablePhysicsHelper.readMass(sub);
 
         double forceMult = com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig.BALLAST_FORCE_MULTIPLIER.get();
-        int count = getFloaterCount(level, sub);
-        double forceToApply = ((errorY * mass * 0.12 * forceMult) * submergedRatio) / count;
-
-        double ballastMaxForce = (4000.0 * mass * forceMult) / count;
-        forceToApply = Math.max(-ballastMaxForce, Math.min(ballastMaxForce, forceToApply));
+        double liftPerFloater = com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig.FLOATER_LIFT.get();
+        double forceToApply = errorY * liftPerFloater * 0.12 * forceMult * submergedRatio;
 
         if (Double.isFinite(forceToApply)) {
             applyForce(sub, forceToApply);

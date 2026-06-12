@@ -233,7 +233,31 @@ public class CompartmentTracker {
     }
 
     public static boolean isInSealedExact(Level level, net.minecraft.world.phys.Vec3 exactPos) {
-        return findContainingSubExact(level, exactPos, SEALED_UNION) != null;
+        AABB gb = globalBounds;
+        if (gb == null || !gb.contains(exactPos.x, exactPos.y, exactPos.z)) return false;
+
+        for (Map.Entry<UUID, SubLevelAccess> e : SUBS.entrySet()) {
+            UUID id = e.getKey();
+            SubLevelAccess access = e.getValue();
+            if (access instanceof dev.ryanhcode.sable.sublevel.SubLevel sl
+                    && sl.getLevel() != null && sl.getLevel().dimension() != level.dimension()) continue;
+            AABB aabb = WORLD_AABB.get(id);
+            if (aabb == null || !aabb.contains(exactPos.x, exactPos.y, exactPos.z)) continue;
+            Set<BlockPos> blocks = SEALED_UNION.get(id);
+            if (blocks == null || blocks.isEmpty()) continue;
+
+            Pose3dc pose = (level.isClientSide && access instanceof dev.ryanhcode.sable.sublevel.ClientSubLevel csl)
+                    ? csl.renderPose()
+                    : access.logicalPose();
+            Vector3d local = new Vector3d(exactPos.x, exactPos.y, exactPos.z);
+            try {
+                pose.transformPositionInverse(local);
+            } catch (Exception ex) {
+                continue;
+            }
+            if (blocks.contains(BlockPos.containing(local.x, local.y, local.z))) return true;
+        }
+        return false;
     }
 
     @Nullable
@@ -245,7 +269,8 @@ public class CompartmentTracker {
         for (Map.Entry<UUID, SubLevelAccess> e : SUBS.entrySet()) {
             UUID id = e.getKey();
             SubLevelAccess access = e.getValue();
-            if (access instanceof dev.ryanhcode.sable.sublevel.SubLevel sl && sl.getLevel() != level) continue;
+            if (access instanceof dev.ryanhcode.sable.sublevel.SubLevel sl
+                    && sl.getLevel() != null && sl.getLevel().dimension() != level.dimension()) continue;
             AABB aabb = WORLD_AABB.get(id);
             if (aabb == null || !aabb.contains(exactPos.x, exactPos.y, exactPos.z)) continue;
             Set<BlockPos> blocks = blockSetPerSub.get(id);
@@ -272,7 +297,8 @@ public class CompartmentTracker {
         for (Map.Entry<UUID, SubLevelAccess> e : SUBS.entrySet()) {
             UUID id = e.getKey();
             SubLevelAccess access = e.getValue();
-            if (access instanceof dev.ryanhcode.sable.sublevel.SubLevel sl && sl.getLevel() != level) continue;
+            if (access instanceof dev.ryanhcode.sable.sublevel.SubLevel sl
+                    && sl.getLevel() != null && sl.getLevel().dimension() != level.dimension()) continue;
             AABB aabb = WORLD_AABB.get(id);
             if (aabb == null || !aabb.contains(cx, cy, cz)) continue;
             Set<BlockPos> blocks = blockSetPerSub.get(id);
