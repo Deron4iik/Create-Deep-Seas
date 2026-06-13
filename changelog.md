@@ -1,5 +1,40 @@
 # Changelog
 
+## [June 13, 2026] - Mod Splitting, Sable Physics & Connecting Glass
+
+### Mod Architecture & Splitting
+- **The Great Mod Split:** Separated the monolithic codebase into three distinct modular projects to streamline development and structure future content:
+  - **Create: Deep Seas:** The main core mod (formerly *Create Submarine*), containing all submarines, buoyancy controllers, depth pressure mechanics, and core underwater tools.
+  - **Create: Abyss:** A dedicated mod containing the Abyss dimension, custom deep-sea biomes, bioluminescent plants/fauna, physical lianas, and the PDA overlay namespace.
+  - **Create: High Seas:** Initial groundwork added for an upcoming mod focused on boat support, custom sails, and wind dynamics.
+
+### New Blocks & Features
+- **Arresting Hook:** Added the Arresting Hook block, block entity, custom item rendering, and creative tab placement for slowing down or docking vessels.
+- **Pressurizer Connected Glass:** Added optional support for the Fusion mod, introducing connected glass textures for all pressurized glass variants.
+
+### Physics & Integration
+- **Sable Force Queuing:** Fully integrated ballast tanks and floaters with Sable's physical force-queuing system. Buoyancy forces are now calculated block-by-block and submitted as aggregated clusters for smoother physics updates.
+- **Sable UI Force Clustering:** Merged multiple ballast and floater indicators into single aggregated points in the submarine diagram UI (displaying total force and count) to avoid screen clutter.
+- **Waterwheel Propulsion:** Added support for waterwheels in sublevels. Large waterwheels now dynamically apply thrust and impulses to the sublevel's physical body.
+
+### Performance & Optimizations
+- **Airtight Check Caching:** Added per-tick caching to `EntityWaterPhysicsMixin` for airtight compartment checks, preventing redundant compartment lookups when multiple entities check their suffocation status in the same tick.
+- **Level-Aware Compartment Lookup:** Optimized `CompartmentTracker` to ignore sublevel entries belonging to different dimensions during containment scans.
+- **Efficient Vegetation Clearing:** Reworked the submarine placement clearing code to sweep foliage/kelp by chunk section rather than block-by-block, respecting world height bounds.
+
+### Bug Fixes
+- **Pressurizer Glass Translucency:** Changed pressurized glass blocks to inherit from `TransparentBlock`, fixing rendering glitches and allowing other blocks to be properly visible through them.
+- **Pocket Fog & Water Culling:** Resolved rendering glitches where fog and water culling wouldn't update properly inside sealed air pockets within sublevels.
+- **Sodium Rendering Integration:** Fixed a Sodium water occlusion issue by switching to `RenderSystem` texture binding inside `SodiumWaterOcclusionBridge`.
+- **Pressure Crack Repair Syncing:** Reworked wrench repairs to decrement crack stages properly and broadcast block updates with correct block IDs to prevent desyncs.
+
+### Under the Hood
+- **Cleaned Bundled Assets:** Removed outdated, temporary bundled files (`temp_aero`) and unused assets to optimize the mod footprint.
+- **Project Structure Documentation:** Added a detailed explanation of the project structure to the repository's `README.md`.
+
+### Localization
+- **Translations:** Synced and updated keys for English (`en_us`), French (`fr_fr`), Russian (`ru_ru`), and Simplified Chinese (`zh_cn`).
+
 ## [June 7, 2026] - Submarine Occlusion & Suffocation Fixes
 
 ### Bug Fixes
