@@ -71,7 +71,7 @@ public class BarometerBlockEntity extends BlockEntity implements IHaveHoveringIn
             if (depth > 0 && weakest != -1) {
                 if (depth > weakest) {
                     state = 3;
-                } else if (depth >= weakest * 0.75) {
+                } else if (depth >= weakest * 0.80) {
                     state = 2;
                 } else {
                     state = 1;
@@ -183,7 +183,7 @@ public class BarometerBlockEntity extends BlockEntity implements IHaveHoveringIn
             tooltip.add(Component.literal("    ")
                 .append(Component.literal("\u26A0 ").withStyle(ChatFormatting.DARK_RED))
                 .append(Component.translatable("create_submarine.gui.goggles.barometer.critical").withStyle(ChatFormatting.RED).withStyle(ChatFormatting.BOLD)));
-        } else if (depth >= weakest * 0.75) {
+        } else if (depth >= weakest * 0.80) {
             tooltip.add(Component.literal("    ")
                 .append(Component.literal("\u26A0 ").withStyle(ChatFormatting.GOLD))
                 .append(Component.translatable("create_submarine.gui.goggles.barometer.warning").withStyle(ChatFormatting.YELLOW)));

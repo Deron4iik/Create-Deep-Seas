@@ -33,25 +33,18 @@ import com.maxenonyme.createsubmarine.submarine.config.SubmarineConfig;
 import com.maxenonyme.createsubmarine.submarine.system.SubmarinePressureSystem;
 
 public class BallastVentBlockEntity extends KineticBlockEntity {
-    /** How the vent moves water, depending on what it is wired to. */
-    private enum Mode { NONE, TANK, CHAMBER, OCEAN }
+    private enum Mode {
+        NONE, TANK, CHAMBER, OCEAN
+    }
 
     private BallastTankBlockEntity cachedTank;
     private int scanCooldown = 0;
 
-    /** Past this water depth, opening a chamber to the sea before it is full implodes it. */
-    private static final int IMPLOSION_DEPTH = 80;
-
     private Mode mode = Mode.NONE;
-    /** When in CHAMBER mode, the sealed compartment the holes open into. */
     private CompartmentDetector.Component cachedCompartment;
-    /** The submarine the chamber belongs to, kept so we can implode it if it is breached deep. */
     private UUID cachedSubId;
-    /** Water (in mB) a pump has pushed into the chamber but not yet turned into blocks. */
     private int pendingFill;
-    /** Water (in mB) a pump has pulled from the chamber but not yet removed as blocks. */
     private int pendingDrain;
-    /** Last tick a pump moved water, and which way (+1 fill, -1 drain), for the flow particles. */
     private long lastFlowTick = Long.MIN_VALUE;
     private int lastFlowDir;
 
@@ -65,8 +58,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         if (level == null || level.isClientSide)
             return;
 
-        // Watch for the chamber being opened to the sea ahead of the slower mode rescan, so a deep
-        // breach implodes promptly instead of up to two seconds later.
         if (mode == Mode.CHAMBER && level.getGameTime() % 5 == 0 && checkChamberBreach())
             return;
 
@@ -83,11 +74,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         }
     }
 
-    /**
-     * Figures out what the vent is wired to and how it should move water. Tank mode (kinetic
-     * ballast filling) takes priority, then a sealed interior compartment (decompression chamber),
-     * then a hole submerged in the open ocean (exterior source/sink).
-     */
     private void detectMode() {
         cachedTank = findBallastTank();
         if (cachedTank != null) {
@@ -105,8 +91,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
             cachedSubId = id;
             return;
         }
-        // We were a chamber and no longer are: the rescan may have caught a breach the per-tick
-        // watcher missed, so run the same implosion check here before forgetting the chamber.
         if (mode == Mode.CHAMBER)
             handleChamberLost();
         cachedCompartment = null;
@@ -114,10 +98,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         mode = isAnyHolesFaceSubmerged() ? Mode.OCEAN : Mode.NONE;
     }
 
-    /**
-     * The sealed compartment a hole face opens directly into, or null. Only sealed, non-compromised
-     * compartments qualify, so an opened door drops the chamber out of CHAMBER mode automatically.
-     */
     private CompartmentDetector.Component findChamberCompartment(UUID id) {
         List<CompartmentDetector.Component> comps = CompartmentTracker.getCompartments(id);
         if (comps.isEmpty())
@@ -134,11 +114,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         return null;
     }
 
-    /**
-     * Called the moment a chamber stops being a sealed chamber. Returns true if it had genuinely
-     * been breached open (as opposed to the scan briefly losing it), having imploded it first when
-     * the sub is deep enough and the chamber still held air.
-     */
     private boolean checkChamberBreach() {
         if (cachedCompartment == null || cachedSubId == null)
             return false;
@@ -157,15 +132,14 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         if (SubmarineConfig.DISABLE_IMPLOSION.get())
             return;
         if (!chamberHasAir(cachedCompartment))
-            return; // fully flooded: pressure is equalised, opening up is safe
-        if (SubmarinePressureSystem.getCachedDepth(cachedSubId) <= IMPLOSION_DEPTH)
+            return;
+        if (!SubmarinePressureSystem.isUnderHighPressure(cachedSubId, level))
             return;
         if (!isChamberBreached(cachedSubId, cachedCompartment))
             return;
         implodeChamber(cachedSubId, cachedCompartment);
     }
 
-    /** True once the chamber air now belongs to an unsealed compartment (a real opening to the sea). */
     private boolean isChamberBreached(UUID id, CompartmentDetector.Component old) {
         BlockPos air = sampleChamberCell();
         if (air == null)
@@ -174,10 +148,9 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
             if (c.internal().contains(air))
                 return !c.sealed() || CompartmentTracker.isCompromised(id, c.anchor());
         }
-        return false; // air not in any tracked compartment yet: scan incomplete, do not act
+        return false;
     }
 
-    /** A chamber air cell next to the vent, used as a stable probe across rescans. */
     private BlockPos sampleChamberCell() {
         if (cachedCompartment == null)
             return null;
@@ -197,11 +170,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         return false;
     }
 
-    /**
-     * Opening the chamber to deep water before it filled implodes it through the existing implosion
-     * system, but scoped to this one compartment so only the water-filling chamber caves in and the
-     * rest of the submarine stays intact.
-     */
     private void implodeChamber(UUID id, CompartmentDetector.Component comp) {
         Level parentLevel = SubLevelRegistry.getLevel(id);
         if (parentLevel == null)
@@ -215,18 +183,10 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
                 .implodeCompartment(id, sub, parentLevel, comp);
     }
 
-    /**
-     * Turns the water a pump has moved through the vent into real water blocks, one full horizontal
-     * layer at a time. Whole layers keep the placed blocks as stable sources instead of leaving
-     * flowing water behind, which also gives the "couche par couche" rise/fall the feature is about.
-     */
     private void processChamber() {
         if (cachedCompartment == null)
             return;
 
-        // Sponge safety: a sponge (or any outside change) can yank water out mid-cycle. Clamp the
-        // in-transit buffers to what the chamber can really hold or give, so we never materialise
-        // water from nowhere nor chase blocks that are no longer there.
         int water = chamberWaterVolume();
         pendingFill = Math.min(pendingFill, Math.max(0, chamberCapacity() - water));
         pendingDrain = Math.min(pendingDrain, water);
@@ -264,11 +224,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         spawnChamberParticles();
     }
 
-    /**
-     * Bubbles stream out of the vent while it pushes water into the chamber and get pulled back in
-     * while it sucks water out, so the flow direction (and whether anything is flowing) reads at a
-     * glance. While the chamber is being filled but still holds air, water drips from the vent.
-     */
     private void spawnChamberParticles() {
         if (!(level instanceof ServerLevel serverLevel))
             return;
@@ -283,8 +238,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
             double fx = worldPosition.getX() + 0.5 + dir.getStepX() * 0.55;
             double fy = worldPosition.getY() + 0.5 + dir.getStepY() * 0.55;
             double fz = worldPosition.getZ() + 0.5 + dir.getStepZ() * 0.55;
-            // count 0 => the deltas are the particle velocity, so bubbles travel along the face,
-            // outward when ejecting water and inward when absorbing it.
             double sign = filling ? 1.0 : -1.0;
             double vx = dir.getStepX() * 0.18 * sign;
             double vy = dir.getStepY() * 0.18 * sign;
@@ -296,7 +249,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         }
     }
 
-    /** The lowest internal layer that still has empty cells (filled bottom-up). */
     private List<BlockPos> lowestEmptyLayer() {
         Set<BlockPos> internal = cachedCompartment.internal();
         int bestY = Integer.MAX_VALUE;
@@ -314,7 +266,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         return layer;
     }
 
-    /** The highest internal layer that still holds water (drained top-down). */
     private List<BlockPos> highestWaterLayer() {
         Set<BlockPos> internal = cachedCompartment.internal();
         int bestY = Integer.MIN_VALUE;
@@ -332,17 +283,14 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         return layer;
     }
 
-    /** Only air is flooded, so torches, ladders and other decorations in the chamber are spared. */
     private boolean isEmptyCell(BlockPos p) {
         return level.getBlockState(p).isAir();
     }
 
-    /** Only the water blocks we placed; waterlogged stairs/fences keep their block when draining. */
     private boolean isWaterCell(BlockPos p) {
         return level.getBlockState(p).getBlock() == Blocks.WATER;
     }
 
-    /** Real water already standing in the chamber, in mB (1 block = 1000 mB). */
     private int chamberWaterVolume() {
         if (cachedCompartment == null)
             return 0;
@@ -354,7 +302,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         return count * 1000;
     }
 
-    /** Capacity counts only fillable cells (air + standing water) so a full chamber stops the pump. */
     private int chamberCapacity() {
         if (cachedCompartment == null)
             return 0;
@@ -450,11 +397,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         };
     }
 
-    /**
-     * Backs the vent's fluid I/O with the real water standing in its decompression chamber.
-     * A pump filling this handler raises the chamber water level a layer at a time; draining it
-     * lowers the level. The pump network decides the direction, so no rotation is required.
-     */
     private class ChamberHandler implements IFluidHandler {
         @Override
         public int getTanks() {
@@ -516,7 +458,6 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         }
     }
 
-    /** An exterior vent sitting in the ocean: a bottomless water source and sink for the pump. */
     private static class OceanHandler implements IFluidHandler {
         private static final int OCEAN = 1_000_000;
 
@@ -721,7 +662,8 @@ public class BallastVentBlockEntity extends KineticBlockEntity {
         }
         if (parentLevel == null)
             return false;
-        return com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.realFluidState(parentLevel, wPos).is(FluidTags.WATER);
+        return com.maxenonyme.createsubmarine.submarine.compartment.CompartmentTracker.realFluidState(parentLevel, wPos)
+                .is(FluidTags.WATER);
     }
 
     @Override
