@@ -29,6 +29,7 @@ public final class WrenchRepairHandler {
         Level oceanLevel = sub instanceof SubLevel sl ? sl.getLevel() : event.getLevel();
         if (SubmarinePressureSystem.repairCrack(subId, clickedPos, oceanLevel)) {
             event.setCanceled(true);
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
         }
     }
 }

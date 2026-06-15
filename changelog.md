@@ -1,5 +1,28 @@
 # Changelog
 
+## [June 15, 2026] - Barometer, Decompression Chambers & Implosion Mechanics
+
+### New Blocks & Features
+- **Barometer:** Added a new Barometer block and item. It displays the current pressure state relative to your submarine's weakest hull block (Acceptable, Warning, Critical) using a visual pufferfish and detailed tooltips.
+- **Commands:** Added the `/submarine findhole` command to help locate leaks and breached blocks in your submarine hull.
+- **Decompression Chambers (WIP):** Enhanced the Ballast Vent to support a "CHAMBER" mode. You can now use ballast tanks to gradually fill or drain sealed airlocks layer by layer. *(Note: The decompression chamber system is currently in development and is currently unusable).*
+- **Boat Support (WIP):** Continued groundwork for boat mechanics. *(Note: The boat system is currently in development and is currently unusable).*
+
+### Physics & Implosion Mechanics
+- **Smart Hull Breaches:** Breaking a block inside the submarine while under extreme pressure no longer instantly implodes the entire sub. The system now strictly verifies that the broken block is part of the *exterior hull* before triggering a catastrophic failure.
+- **Copycat Support:** Added official support for Create and Copycats+ copycat blocks. The pressure system now dynamically reads the copied material to determine maximum depth and cracking behavior.
+- **Creative Mode Safety:** Breaking the exterior hull while in Creative Mode no longer triggers an implosion, allowing you to safely build or modify your submarine at any depth.
+- **Dynamic Airlock Implosions:** IN WIP; Don't USE Decompression chambers no longer implode at a hardcoded depth of 80 blocks if opened to the ocean without being filled with water first. They now dynamically check your submarine's hull strength and will only implode if you are in a "Warning" or "Critical" pressure state.
+- **Visual Hull Cracks:** As your hull approaches its pressure limits, visible cracks will form and water will begin dripping into the submarine.
+- **Wrench Repairs:** You can now repair these cracks before the hull gives way by right-clicking on them with the Create Wrench, which will reinforce the block and prevent implosion.
+- **Adjusted Pressure Thresholds:** The "Warning" threshold on the Barometer and for the pressure system has been raised to 80% of your weakest hull block's maximum depth (previously 75%), giving you a larger safe margin before things become critical.
+
+### Bug Fixes & Refactoring
+- **Accurate Hull Detection:** Fixed a major bug where unsealed exterior areas (like the surrounding ocean) were evaluated as submarine compartments. This previously caused non-structural exterior blocks, corners, and decorations to incorrectly lower the submarine's total hull strength.
+- **Copycat Wrench Priority:** Fixed a conflict where trying to repair a cracked Copycat block with a Wrench would unintentionally strip its applied material. The wrench will now strictly prioritize repairing cracks before allowing the block to be undisguised.
+- **Pulley Renaming:** Renamed internal references, blocks, and items from "Poulis" to "Pulley" for better clarity.
+- **Rendering Fixes:** Implemented rendering fixes for water occlusion and resolved issues causing invisible blocks in production environments when using Veil/Flywheel shaders.
+
 ## [June 13, 2026] - Mod Splitting, Sable Physics & Connecting Glass
 
 ### Mod Architecture & Splitting
