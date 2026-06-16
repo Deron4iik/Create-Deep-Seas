@@ -42,6 +42,7 @@ public final class CreateSubmarineClient {
         modEventBus.addListener(CreateSubmarineClient::onRegisterRenderers);
         modEventBus.addListener(CreateSubmarineClient::onRegisterScreens);
         modEventBus.addListener(CreateSubmarineClient::onRegisterClientExtensions);
+        CreateSubmarine.clientCrackCheck = SubLevelCrackRenderer::hasCrack;
 
         modEventBus.addListener(WatermarkOverlay::register);
 

@@ -57,6 +57,7 @@ public class CreateSubmarine {
         public static final Logger LOGGER = LogUtils.getLogger();
         public static final boolean DISABLE_WATER_OCCLUSION = false;
         public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, MOD_ID);
+        public static java.util.function.BiPredicate<java.util.UUID, net.minecraft.core.BlockPos> clientCrackCheck = (id, pos) -> false;
         public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, MOD_ID);
         public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister
                         .create(BuiltInRegistries.BLOCK_ENTITY_TYPE, MOD_ID);
@@ -130,7 +131,7 @@ public class CreateSubmarine {
                         .register("suffocation",
                                         SuffocationEffect::new);
         public static final Supplier<Block> BAROMETER = BLOCKS.register("barometer",
-                        () -> new com.maxenonyme.createsubmarine.submarine.block.BarometerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS).noOcclusion()));
+                        () -> new com.maxenonyme.createsubmarine.submarine.block.BarometerBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK).requiresCorrectToolForDrops().noOcclusion()));
         public static final Supplier<Item> BAROMETER_ITEM = ITEMS.register("barometer",
                         () -> new net.minecraft.world.item.BlockItem(BAROMETER.get(), new net.minecraft.world.item.Item.Properties()));
         public static final Supplier<BlockEntityType<com.maxenonyme.createsubmarine.submarine.block.entity.BarometerBlockEntity>> BAROMETER_BE = BLOCK_ENTITIES.register(
@@ -303,6 +304,7 @@ public class CreateSubmarine {
                 MENUS.register(modEventBus);
                 DENSITY_FUNCTIONS.register(modEventBus);
                 CONDITION_CODECS.register(modEventBus);
+                com.maxenonyme.createsubmarine.submarine.system.SubmarineDisplaySources.register(modEventBus);
                 modEventBus.addListener(this::onCommonSetup);
                 modEventBus.addListener(this::onConfigLoaded);
                 modEventBus.addListener(this::registerPayloads);
@@ -314,7 +316,7 @@ public class CreateSubmarine {
                 NeoForge.EVENT_BUS.addListener(com.maxenonyme.createsubmarine.submarine.system.CableElectrificationSystem::onServerTick);
                 NeoForge.EVENT_BUS.addListener(
                                 com.maxenonyme.createsubmarine.submarine.system.SubmarineInfoCommand::register);
-                NeoForge.EVENT_BUS.addListener(
+                NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGH,
                                 com.maxenonyme.createsubmarine.submarine.system.WrenchRepairHandler::onRightClickBlock);
                 NeoForge.EVENT_BUS.addListener(this::onBlockPlaceAboveSensor);
                 NeoForge.EVENT_BUS.addListener(
@@ -434,15 +436,19 @@ public class CreateSubmarine {
         }
 
         private void onCommonSetup(FMLCommonSetupEvent event) {
-                event.enqueueWork(() -> {
-                        HullStrengthConfig.load();
-                        registerToSimulatedTab();
-                        com.simibubi.create.api.stress.BlockStressValues.IMPACTS.register(SUBMARINE_PROPELLER.get(), () -> 4.0);
-                        com.simibubi.create.foundation.item.TooltipModifier.REGISTRY.register(
-                                        SUBMARINE_PROPELLER_ITEM.get(),
-                                        com.simibubi.create.foundation.item.TooltipModifier.mapNull(
-                                                        com.simibubi.create.foundation.item.KineticStats.create(SUBMARINE_PROPELLER_ITEM.get())));
-                });
+            event.enqueueWork(() -> {
+                HullStrengthConfig.load();
+                registerToSimulatedTab();
+                com.simibubi.create.api.stress.BlockStressValues.IMPACTS.register(SUBMARINE_PROPELLER.get(), () -> 4.0);
+                com.simibubi.create.foundation.item.TooltipModifier.REGISTRY.register(
+                                SUBMARINE_PROPELLER_ITEM.get(),
+                                com.simibubi.create.foundation.item.TooltipModifier.mapNull(
+                                                com.simibubi.create.foundation.item.KineticStats.create(SUBMARINE_PROPELLER_ITEM.get())));
+                com.simibubi.create.api.behaviour.display.DisplaySource.BY_BLOCK_ENTITY.register(
+                BAROMETER_BE.get(),
+                java.util.List.of(com.maxenonyme.createsubmarine.submarine.system.SubmarineDisplaySources.BAROMETER.get())
+            );
+            });
         }
 
         @SuppressWarnings("unchecked")

@@ -81,7 +81,22 @@ public class SteelCableItem extends RopeItem {
             accessorB.createsubmarine$setSteelCable(true);
         }
 
-        if (ropeHolderA.createRope(ropeHolderB)) {
+        boolean success = false;
+        try {
+            java.lang.reflect.Method createRopeMethod = dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior.class.getMethod("createRope", dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior.class, boolean.class);
+            success = (boolean) createRopeMethod.invoke(ropeHolderA, ropeHolderB, false);
+        } catch (NoSuchMethodException e) {
+            try {
+                java.lang.reflect.Method createRopeMethod = dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior.class.getMethod("createRope", dev.simulated_team.simulated.content.blocks.rope.RopeStrandHolderBehavior.class);
+                success = (boolean) createRopeMethod.invoke(ropeHolderA, ropeHolderB);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (success) {
             ropeHolderA.blockEntity.notifyUpdate();
             ropeHolderB.blockEntity.notifyUpdate();
             level.playSound(null, posA, SoundEvents.WOOL_PLACE, SoundSource.BLOCKS, 0.5F, 1F);

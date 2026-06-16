@@ -3,7 +3,9 @@
 ## [June 15, 2026] - Barometer, Decompression Chambers & Implosion Mechanics
 
 ### New Blocks & Features
-- **Barometer:** Added a new Barometer block and item. It displays the current pressure state relative to your submarine's weakest hull block (Acceptable, Warning, Critical) using a visual pufferfish and detailed tooltips.
+- **Create Aeronautics Compatibility:** Officially updated compatibility to fully support the new **Create: Aeronautics 1.3.0** update.
+- **Barometer:** Added a new Barometer block and item. It displays the current pressure state relative to your submarine's weakest hull block (Acceptable, Warning, Critical) using a visual pufferfish and detailed tooltips. Mining it correctly requires an Iron Pickaxe.
+- **Barometer Display Link:** The Barometer now updates Display Links at an incredibly fast 10 times per second (every 2 ticks), making connected displays instantly responsive to depth changes.
 - **Commands:** Added the `/submarine findhole` command to help locate leaks and breached blocks in your submarine hull.
 - **Decompression Chambers (WIP):** Enhanced the Ballast Vent to support a "CHAMBER" mode. You can now use ballast tanks to gradually fill or drain sealed airlocks layer by layer. *(Note: The decompression chamber system is currently in development and is currently unusable).*
 - **Boat Support (WIP):** Continued groundwork for boat mechanics. *(Note: The boat system is currently in development and is currently unusable).*
@@ -16,10 +18,13 @@
 - **Visual Hull Cracks:** As your hull approaches its pressure limits, visible cracks will form and water will begin dripping into the submarine.
 - **Wrench Repairs:** You can now repair these cracks before the hull gives way by right-clicking on them with the Create Wrench, which will reinforce the block and prevent implosion.
 - **Adjusted Pressure Thresholds:** The "Warning" threshold on the Barometer and for the pressure system has been raised to 80% of your weakest hull block's maximum depth (previously 75%), giving you a larger safe margin before things become critical.
+- **Config Auto-Reset:** Because the depth calculations and global caps have been entirely overhauled to allow blocks to go much deeper, the `submarine_hull.json` config file will be automatically regenerated (and the old one backed up) the first time you launch this version.
 
 ### Bug Fixes & Refactoring
 - **Accurate Hull Detection:** Fixed a major bug where unsealed exterior areas (like the surrounding ocean) were evaluated as submarine compartments. This previously caused non-structural exterior blocks, corners, and decorations to incorrectly lower the submarine's total hull strength.
 - **Copycat Wrench Priority:** Fixed a conflict where trying to repair a cracked Copycat block with a Wrench would unintentionally strip its applied material. The wrench will now strictly prioritize repairing cracks before allowing the block to be undisguised.
+- **Login Desynchronization & Fog Fix:** Fixed an issue where logging into a world inside a submarine temporarily affected players with water physics and thick fog. The compartment scan penalty delay was removed, allowing immediate airtight verification upon chunk loading.
+- **Dedicated Server Crash Fixes:** Fixed severe startup crashes on dedicated servers by ensuring optional dependencies (`lithostitched`, `fusion`) are strictly marked as optional in the `mods.toml`, and abstracting client-side rendering elements (`SubLevelCrackRenderer`) from common server Mixins.
 - **Pulley Renaming:** Renamed internal references, blocks, and items from "Poulis" to "Pulley" for better clarity.
 - **Rendering Fixes:** Implemented rendering fixes for water occlusion and resolved issues causing invisible blocks in production environments when using Veil/Flywheel shaders.
 
