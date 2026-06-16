@@ -59,6 +59,10 @@ public class SubmarinePressureSystem {
         CRACK_LEVELS.clear();
     }
 
+    public static boolean isPressurized(UUID id) {
+        return CACHED_WATER_DEPTH.getOrDefault(id, 0) > 0;
+    }
+
     public static Map<UUID, Map<BlockPos, Integer>> getAllCracks() {
         return CRACK_LEVELS;
     }

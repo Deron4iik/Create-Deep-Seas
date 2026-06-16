@@ -23,10 +23,11 @@ public final class WrenchRepairHandler {
         BlockPos clickedPos = event.getPos();
         UUID subId = SubLevelRegistry.findUUID(event.getLevel(), clickedPos);
         if (subId == null) return;
+        
         SubLevelAccess sub = SubLevelRegistry.getAll().get(subId);
         if (sub == null) return;
 
-        Level oceanLevel = sub instanceof SubLevel sl ? sl.getLevel() : event.getLevel();
+        Level oceanLevel = sub instanceof dev.ryanhcode.sable.sublevel.SubLevel sl ? sl.getLevel() : event.getLevel();
         if (SubmarinePressureSystem.repairCrack(subId, clickedPos, oceanLevel)) {
             event.setCanceled(true);
             event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
