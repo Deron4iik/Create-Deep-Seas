@@ -43,6 +43,7 @@ public final class CreateSubmarineClient {
         modEventBus.addListener(CreateSubmarineClient::onRegisterScreens);
         modEventBus.addListener(CreateSubmarineClient::onRegisterClientExtensions);
         CreateSubmarine.clientCrackCheck = SubLevelCrackRenderer::hasCrack;
+        CreateSubmarine.clientPoseGetter = (sub) -> sub instanceof dev.ryanhcode.sable.sublevel.ClientSubLevel csl ? csl.renderPose() : sub.logicalPose();
 
         modEventBus.addListener(WatermarkOverlay::register);
 
