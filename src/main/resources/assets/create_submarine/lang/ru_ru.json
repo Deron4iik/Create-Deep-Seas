@@ -1,6 +1,7 @@
 {
   "block.create_submarine.ballast_tank": "Балласт субмарины",
   "block.create_submarine.ballast_vent": "Клапан балласта",
+  "block.create_submarine.decompression_chamber": "Декомпрессионная камера",
   "block.create_submarine.copper_pressurizer": "Медное уплотнённое стекло",
   "block.create_submarine.creative_oxygenator": "Творческий генератор кислорода",
   "block.create_submarine.electrolyzer": "Электролизёр",
@@ -46,6 +47,8 @@
   "create_submarine.configuration.gameplay.tooltip": "Общие настройки геймплея.",
   "create_submarine.configuration.globalMaxDepthCap": "Глобальный лимит глубины",
   "create_submarine.configuration.globalMaxDepthCap.tooltip": "Лимит, применяемый к maxWaterDepth всех блоков не из Create Deep Seas. Значения для отдельных блоков хранятся в config/submarine_hull.json.",
+
+  "item.create_submarine.decompression_chamber.tooltip.wip": "В разработке, не используйте!",
   "create_submarine.configuration.hullStrength": "Прочность корпуса",
   "create_submarine.configuration.hullStrength.button": "Прочность корпуса",
   "create_submarine.configuration.hullStrength.tooltip": "Сопротивление корпуса к давлению воды.",
@@ -176,7 +179,7 @@
   "create_submarine.command.findhole.must_be_inside": "Вы должны быть внутри области субмарины.",
   "create_submarine.command.findhole.too_large": "Область субмарины слишком велика для сканирования.",
   "create_submarine.command.findhole.sealed": "Субмарина идеально герметична! Пробоин не найдено.",
-  "create_submarine.command.findhole.outside": "Could not find a valid enclosure. Вы не находитесь в субмарине.",
+  "create_submarine.command.findhole.outside": "Не найдено действительного пространства. Вы не находитесь в субмарине.",
   "create_submarine.command.findhole.detected_count": "обнаружено пробоин: %s шт.",
   "create_submarine.command.findhole.entry": "Локально: [%s, %s, %s] -> Мир: [%s, %s, %s]",
   "create_submarine.command.findhole.more": "... и ещё %s шт. пробоин.",
@@ -185,5 +188,7 @@
   "create_submarine.display_source.mode.title": "Режим отображения",
   "create_submarine.display_source.mode.depth_only": "Только глубина",
   "create_submarine.display_source.mode.danger_only": "Только предупреждения",
-  "create_submarine.display_source.mode.both": "Глубина и Предупреждения"
+  "create_submarine.display_source.mode.both": "Глубина и Предупреждения",
+  "create_submarine.ponder.tag.deep_seas": "Компоненты Deep Seas",
+  "create_submarine.ponder.tag.deep_seas.description": "Инженерия и механики субмарин"
 }
